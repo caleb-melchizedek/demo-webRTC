@@ -1,0 +1,24 @@
+{
+  "name": "demo-webrtc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "devStart": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caleb-melchizedek/demo-webRTC.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/caleb-melchizedek/demo-webRTC/issues"
+  },
+  "homepage": "https://github.com/caleb-melchizedek/demo-webRTC#readme",
+  "dependencies": {
+    "socket.io": "^2.3.0"
+  }
+}
