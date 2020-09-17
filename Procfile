@@ -1,1 +1,1 @@
-web: node videoChat/bin/www
+web: node bin/www
