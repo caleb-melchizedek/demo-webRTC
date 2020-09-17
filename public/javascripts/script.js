@@ -1,6 +1,6 @@
 
-const port = normalizePort(process.env.PORT || '3000');
-const socket =io(port);
+//const port = normalizePort(process.env.PORT || '3000');
+const socket =io();
 
 const { RTCPeerConnection, RTCSessionDescription } = window;
 const peerConnection= new RTCPeerConnection;
