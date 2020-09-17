@@ -127,7 +127,7 @@ socket.on("update-user-list", ({ users,myId }) => {
 
  peerConnection.ontrack = function({ streams:[stream] }) {
    const remoteStream= new MediaStream();
-   remoteStream.addTrack(track ,stream);
+   remoteStream.addTrack(event.track ,stream);
   const remoteVideo = document.getElementById("remote-video");
   if (remoteVideo) {
     remoteVideo.srcObject =remoteStream;
