@@ -1,4 +1,6 @@
-const socket =io('http://localhost:3000')
+
+const port = normalizePort(process.env.PORT || '3000');
+const socket =io(port);gi
 
 const { RTCPeerConnection, RTCSessionDescription } = window;
 const peerConnection= new RTCPeerConnection;
@@ -125,7 +127,7 @@ socket.on("update-user-list", ({ users,myId }) => {
 
  peerConnection.ontrack = function({ streams:[stream] }) {
    const remoteStream= new MediaStream();
-   remoteStream.addTrack(event.track ,stream);
+   remoteStream.addTrack(track ,stream);
   const remoteVideo = document.getElementById("remote-video");
   if (remoteVideo) {
     remoteVideo.srcObject =remoteStream;
