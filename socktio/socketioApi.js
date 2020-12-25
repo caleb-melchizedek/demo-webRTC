@@ -10,7 +10,7 @@ let socketioApi={
 
 io.on('connection',(socket) =>{
   console.log(`socket connected${socket.id}`);
-  socket.emit("my-id",{myId:socket.id});
+    
 
   const existingSocket=socketioApi.activeSockets.find(
     existingSocket=>existingSocket === socket.id 

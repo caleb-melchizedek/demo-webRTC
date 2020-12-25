@@ -21,7 +21,7 @@ const getMedia = navigator.mediaDevices.getUserMedia(
   ).catch(
     error => {console.warn(error.message) }
   );
-
+  // || navigator.mozGetUserMedia || navigator.webkitGetUserMedia
 
 //socket operations
 
@@ -44,15 +44,15 @@ socket.on("update-user-list", ({ users,myId }) => {
 
  function updateUserList(socketIds,my_Id) {
 
-  const otherSocketIds= socketIds.filter((socketId)=>{
-    socketId !== my_Id;
-  });
-    console.log(typeof(my_Id));
-    console.log(my_Id);
-    console.log(socketIds);
-   console.log(otherSocketIds);
+  // const otherSocketIds= socketIds.filter((socketId)=>{
+  //   socketId !== my_Id;
+  // });
+
+  //   console.log(my_Id);
+  //  console.log(otherSocketIds);
   const activeUserContainer = document.getElementById("active-user-container");
-  
+
+  console.log(socketIds);
   //otherS
   socketIds.forEach(socketId => {
     const alreadyExistingUser = document.getElementById(socketId);
@@ -132,4 +132,4 @@ socket.on("update-user-list", ({ users,myId }) => {
   if (remoteVideo) {
     remoteVideo.srcObject =remoteStream;
   }
- };
+ }; 
