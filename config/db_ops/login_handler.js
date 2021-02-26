@@ -28,10 +28,12 @@ async function handler( req, res){
       }
     }
     
+  
   } catch(err){
     console.log(err);
     return res.status(500).json({message:'Sorry could not Login you in'});
   }
+
 
 }
 

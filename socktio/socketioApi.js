@@ -1,6 +1,8 @@
 var socket_io = require('socket.io');
 let io = socket_io();
 
+let newjs = require('../routes/new');
+
 let socketioApi={
   io:io,
   activeSockets:[]
@@ -10,28 +12,28 @@ let socketioApi={
 
 io.on('connection',(socket) =>{
   console.log(`socket connected${socket.id}`);
-    
+  module.exports=socket;
 
   const existingSocket=socketioApi.activeSockets.find(
-    existingSocket=>existingSocket === socket.id 
+    existingSocket=>existingSocket.socketId === socket.id 
   );
 
   if(!existingSocket){
-    socketioApi.activeSockets.push(socket.id);
-
+    if(newjs.name){
+    socketioApi.activeSockets.push({name:newjs.name,socketId:socket.id});
+    console.log(socketioApi.activeSockets)
     socket.emit("update-user-list",{
-      users: socketioApi.activeSockets.filter(
-        existingSocket=>existingSocket !== socket.id
-      ),
+      users:socketioApi.activeSockets,
       myId:socket.id
-    });
+    }); 
 
     socket.broadcast.emit("update-user-list",{
-      users:[socket.id],
+      users:socketioApi.activeSockets,
       myId:socket.id
     });
-
+    }
   }
+
 
   socket.on("call-user", data => {
     socket.to(data.to).emit("call-made", {
@@ -51,16 +53,31 @@ io.on('connection',(socket) =>{
 
 
   socket.on("disconnect",()=>{
-    socketioApi.activeSockets = socketioApi.activeSockets.filter(
-      existingSocket=> existingSocket !== socket.id
-    );
-    socket.broadcast.emit("remove-user",{
-      socketId:socket.id
-    });
+    console.log(socket.id);
+    let socketUser = socketioApi.activeSockets.find(e=> e.socketId==socket.id);
+   console.log(typeof(socketUser));
+     let userName= socketUser["name"];
+     console.log(userName);
 
-  });
+    function removeUser(userList,user){
+      return( 
+        userList.filter(e => e["name"] !== user)
+      )
+    };
+   socketioApi.activeSockets= removeUser(socketioApi["activeSockets"],userName)
+   console.log(socketioApi.activeSockets);
+
+    // socket.broadcast.emit("remove-user",{
+    //   socketId:socket.id
+    // });
+
+    // socket.broadcast.emit("update-user-list",{
+    //   users:socketioApi.activeSockets,
+    //   myId:socket.id
+    // });
+
+  })
 
 });
-
 
 module.exports= socketioApi;
