@@ -71,14 +71,20 @@ micBtn.addEventListener( "click",
 );
 
 
- function updateUserList(users,my_Id) {
+ function updateUserList(users) {
   //otherS
+  console.log(users);
+  const activeUserContainer = document.getElementById("smallVideosWrapper")
+
+  while (activeUserContainer.firstChild) {
+    activeUserContainer.removeChild(activeUserContainer.firstChild);
+  }
+  
   users.forEach(user => {
     const alreadyExistingUser = document.getElementById(user.name);
     if (!alreadyExistingUser) {
       console.log("no exisiting user found")
       const userContainerEl = createUserItemContainer(user.socketId, user.name);
-      const activeUserContainer = document.getElementById("smallVideosWrapper")
       activeUserContainer.appendChild(userContainerEl); 
     }
   });

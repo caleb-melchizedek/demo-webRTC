@@ -29,7 +29,6 @@ io.on('connection',(socket) =>{
 
     socket.broadcast.emit("update-user-list",{
       users:socketioApi.activeSockets,
-      myId:socket.id
     });
     }
   }
@@ -64,17 +63,16 @@ io.on('connection',(socket) =>{
         userList.filter(e => e["name"] !== user)
       )
     };
-   socketioApi.activeSockets= removeUser(socketioApi["activeSockets"],userName)
+   socketioApi.activeSockets= removeUser(socketioApi["activeSockets"],userName);
    console.log(socketioApi.activeSockets);
 
     // socket.broadcast.emit("remove-user",{
     //   socketId:socket.id
     // });
 
-    // socket.broadcast.emit("update-user-list",{
-    //   users:socketioApi.activeSockets,
-    //   myId:socket.id
-    // });
+    socket.broadcast.emit("update-user-list",{
+      users:socketioApi.activeSockets,
+     });
 
   })
 
