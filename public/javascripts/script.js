@@ -12,12 +12,13 @@ video: false,
 audio:false
 }
 
-function getMedia(){
+function getMedia(socketId){
   navigator.mediaDevices.getUserMedia(media)
   .then(
     stream => {
       window.stream = stream;
-      const localVideo = document.getElementById("local-video");
+      const localVideo = document.querySelector(`#${socketId}`);
+      console.log(localVideo);
       if (localVideo) {
         localVideo.srcObject = stream;
       };
@@ -34,9 +35,9 @@ function getMedia(){
 
 socket.on("update-user-list", ({ users,myId }) => {
   updateUserList(users,myId);
-  
  });
-  
+
+ socket.on("showMedia",socketId=>getMedia(socketId.socketId));
 
  socket.on("remove-user", ({ socketId }) => {
   const elToRemove = document.getElementById(socketId);
@@ -51,12 +52,11 @@ socket.on("update-user-list", ({ users,myId }) => {
 
  //toggle video
 let videoBtn=document.getElementById("videoBtn");
-
 videoBtn.addEventListener("click",
   function(){    
     media.video= !media.video 
     console.log(media)
-    getMedia();
+    socket.emit("getMedia");
   }
 
 );
@@ -66,7 +66,7 @@ micBtn.addEventListener( "click",
   function(){ 
     media.audio= !media.audio 
     console.log(media)
-    getMedia();
+    socket.emit("getMedia");
   }
 );
 
@@ -78,12 +78,11 @@ micBtn.addEventListener( "click",
 
   while (activeUserContainer.firstChild) {
     activeUserContainer.removeChild(activeUserContainer.firstChild);
+    console.log("vids removed for replacement")
   }
-  
   users.forEach(user => {
     const alreadyExistingUser = document.getElementById(user.name);
     if (!alreadyExistingUser) {
-      console.log("no exisiting user found")
       const userContainerEl = createUserItemContainer(user.socketId, user.name);
       activeUserContainer.appendChild(userContainerEl); 
     }
@@ -97,11 +96,14 @@ micBtn.addEventListener( "click",
   const smallVideo = document.createElement("video");
 
   smallVideoWrapper.setAttribute("class", "wrapper");
-  smallVideoWrapper.setAttribute("id", socketId);
+  smallVideoWrapper.setAttribute("id",name );
 
-  smallVideo.setAttribute("class", "local-video");
-  smallVideo.setAttribute("id", name);
+ // smallVideo.setAttribute("class", "");
+  smallVideo.setAttribute("id",socketId);
+  smallVideo.setAttribute("autoplay","true");
+  smallVideo.setAttribute("muted","true");
   
+
   smallVideoWrapper.appendChild(smallVideo);
   
   smallVideoWrapper.addEventListener("click", () => {
