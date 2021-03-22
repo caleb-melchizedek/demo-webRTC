@@ -7,13 +7,41 @@ const peerConnection= new RTCPeerConnection;
 
 //capture local media
 
-const media={
+const constraints={
 video: false,
 audio:false
 }
 
 function getMedia(socketId){
-  navigator.mediaDevices.getUserMedia(media)
+  
+  //check for mediadevices
+  if (navigator.mediaDevices === undefined) {
+    navigator.mediaDevices = {};
+  }
+  // For browsers with partial implementation mediaDevices. 
+  // Assign a constraints object to getUserMedia if such properties don't exist.
+  // Add the getUserMedia property if missing.
+  if (navigator.mediaDevices.getUserMedia === undefined) {
+    navigator.mediaDevices.getUserMedia = function(constraints) {
+
+      // First get legacy getUserMedia, if present
+      var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+      // Some browsers just don't implement it - return a rejected promise with an error
+      // to keep a consistent interface
+      if (!getUserMedia) {
+        return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+      }
+
+      // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
+      return new Promise(function(resolve, reject) {
+        getUserMedia.call(navigator, constraints, resolve, reject);
+      });
+    }
+  }
+
+
+  navigator.mediaDevices.getUserMedia(constraints)
   .then(
     stream => {
       window.stream = stream;
