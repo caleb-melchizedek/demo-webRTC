@@ -48,7 +48,13 @@ function getMedia(socketId){
       const localVideo = document.querySelector(`#${socketId}`);
       console.log(localVideo);
       if (localVideo) {
-        localVideo.srcObject = stream;
+        
+        if ("srcObject" in localVideo) {
+          localVideo.srcObject = stream;
+        } else {
+          // Avoid using this in new browsers, as it is going away.
+          localVideo.src = window.URL.createObjectURL(stream);
+        }
       };
       stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
     }
