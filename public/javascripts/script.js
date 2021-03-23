@@ -7,12 +7,21 @@ const peerConnection= new RTCPeerConnection;
 
 //capture local media
 
-const constraints={
-video: false,
-audio:false
-}
+const mediaCheck={
+  audio:false,
+  video:false
+};
+var constraints={
+  audio:true,
+  video:true
+};
 
 function getMedia(socketId){
+  // if(mediaCheck.audio==true && mediaCheck.video==true){ constraints= {audio:true, video:true}}
+  // else if(mediaCheck.audio==false && mediaCheck.video==true){ constraints={video:true}}
+  // else if(mediaCheck.audio==true && mediaCheck.video==false){ constraints={audio:true}}
+  // else if(mediaCheck.audio=false && mediaCheck.video==false){ constraints= {}}
+
   
   //check for mediadevices
   if (navigator.mediaDevices === undefined) {
@@ -45,16 +54,49 @@ function getMedia(socketId){
   .then(
     stream => {
       window.stream = stream;
+
+      if(mediaCheck.audio==true && mediaCheck.video==true){
+        
+      }
+      else if(mediaCheck.audio==false && mediaCheck.video==true){
+        // stop only mic
+        stream.getTracks().forEach(function(track) {
+            if (track.readyState == 'live' && track.kind === 'audio') {
+                track.stop();
+            }
+            console.log(track);
+        });
+      }
+      else if(mediaCheck.audio==true && mediaCheck.video==false){
+         // stop only camera
+          stream.getTracks().forEach(function(track) {
+              if (track.readyState == 'live' && track.kind === 'video') {
+                  track.stop();
+              }
+              console.log(track);
+          });
+      }
+      else if(mediaCheck.audio==false && mediaCheck.video==false){
+        // stop both camera and mic
+          stream.getTracks().forEach(function(track) {
+              if (track.readyState == 'live') {
+                  track.stop();
+              }
+              console.log(track);
+          });
+      }
+      
+  
+
       const localVideo = document.querySelector(`#${socketId}`);
       console.log(localVideo);
-      if (localVideo) {
-        
-        if ("srcObject" in localVideo) {
-          localVideo.srcObject = stream;
-        } else {
-          // Avoid using this in new browsers, as it is going away.
-          localVideo.src = window.URL.createObjectURL(stream);
-        }
+      if (localVideo) { 
+          if ("srcObject" in localVideo) {
+            localVideo.srcObject = stream;
+          } else {
+            // Avoid using this in new browsers, as it is going away.
+            localVideo.src = window.URL.createObjectURL(stream);
+          }
       };
       stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
     }
@@ -88,8 +130,8 @@ socket.on("update-user-list", ({ users,myId }) => {
 let videoBtn=document.getElementById("videoBtn");
 videoBtn.addEventListener("click",
   function(){    
-    constraints.video= !constraints.video 
-    console.log(constraints)
+    mediaCheck.video= !mediaCheck.video 
+    console.log(mediaCheck)
     socket.emit("getMedia");
   }
 
@@ -98,8 +140,8 @@ videoBtn.addEventListener("click",
 let micBtn=document.getElementById("micBtn");
 micBtn.addEventListener( "click",
   function(){ 
-    constraints.audio= !constraints.audio 
-    console.log(constraints)
+    mediaCheck.audio= !mediaCheck.audio 
+    console.log(mediaCheck)
     socket.emit("getMedia");
   }
 );
