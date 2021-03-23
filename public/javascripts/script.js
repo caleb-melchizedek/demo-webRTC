@@ -89,6 +89,7 @@ function getMedia(socketId){
   
 
       const localVideo = document.querySelector(`#${socketId}`);
+      localVideo.muted=true;
       console.log(localVideo);
       if (localVideo) { 
           if ("srcObject" in localVideo) {
@@ -177,7 +178,7 @@ micBtn.addEventListener( "click",
  // smallVideo.setAttribute("class", "");
   smallVideo.setAttribute("id",socketId);
   smallVideo.setAttribute("autoplay","true");
-  smallVideo.setAttribute("muted","true");
+
   
 
   smallVideoWrapper.appendChild(smallVideo);
