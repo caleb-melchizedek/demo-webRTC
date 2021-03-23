@@ -88,8 +88,8 @@ socket.on("update-user-list", ({ users,myId }) => {
 let videoBtn=document.getElementById("videoBtn");
 videoBtn.addEventListener("click",
   function(){    
-    media.video= !media.video 
-    console.log(media)
+    constraints.video= !constraints.video 
+    console.log(constraints)
     socket.emit("getMedia");
   }
 
@@ -98,8 +98,8 @@ videoBtn.addEventListener("click",
 let micBtn=document.getElementById("micBtn");
 micBtn.addEventListener( "click",
   function(){ 
-    media.audio= !media.audio 
-    console.log(media)
+    constraints.audio= !constraints.audio 
+    console.log(constraints)
     socket.emit("getMedia");
   }
 );
