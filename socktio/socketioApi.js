@@ -30,16 +30,17 @@ io.on('connection',(socket) =>{
     socket.broadcast.emit("update-user-list",{
       users:socketioApi.activeSockets,
     });
-    socket.emit("showMedia",{socketId:socket.id});
-    socket.broadcast.emit("showMedia",{socketId:socket.id});
+    // socket.emit("showMedia",{socketId:socket.id});
+    // socket.broadcast.emit("showMedia",{socketId:socket.id});
     }
   }
 
-  socket.on("getMedia",()=>{
-    socket.emit("showMedia",{
-      socketId:socket.id
-    });
-  });
+  // socket.on("getMedia",()=>{
+  //   socket.emit("showMedia",{
+  //     socketId:socket.id
+  //   });
+  // });
+
   socket.on("call-user", data => {
     socket.to(data.to).emit("call-made", {
       offer: data.offer,
