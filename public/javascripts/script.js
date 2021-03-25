@@ -88,7 +88,6 @@ function getMedia(socketId){
   
 
       const localVideo = document.querySelector(`#${mySocketId}`);
-      // localVideo.muted=true;
       console.log(localVideo);
       if (localVideo) { 
           if ("srcObject" in localVideo) {
