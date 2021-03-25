@@ -59,7 +59,7 @@ function getMedia(socketId){
         stream.getTracks().forEach(function(track) {
             if (track.readyState == 'live' && track.kind === 'audio') {
                 track.stop();
-                track.enabled=false;
+                // track.enabled=false;
             }
             console.log(track);
         });
@@ -69,7 +69,7 @@ function getMedia(socketId){
           stream.getTracks().forEach(function(track) {
               if (track.readyState == 'live' && track.kind === 'video') {
                   track.stop();
-                  track.enabled=false;
+                  // track.enabled=false;
               }
               console.log(track);
           });
@@ -79,7 +79,7 @@ function getMedia(socketId){
           stream.getTracks().forEach(function(track) {
               if (track.readyState == 'live') {
                   track.stop();
-                  track.enabled=false;
+                  // track.enabled=false;
               }
               console.log(track);
           });
@@ -88,7 +88,7 @@ function getMedia(socketId){
   
 
       const localVideo = document.querySelector(`#${mySocketId}`);
-      localVideo.muted=true;
+      // localVideo.muted=true;
       console.log(localVideo);
       if (localVideo) { 
           if ("srcObject" in localVideo) {
@@ -168,15 +168,26 @@ micBtn.addEventListener( "click",
  }
 
  function createUserItemContainer(socketId, name) {
+  var inits="";
+  let a =name.split(" ",2);
+  a.forEach(function(b){
+    inits=inits+b[0].toUpperCase();
+  });
+
+  console.log(inits);
   const smallVideoWrapper = document.createElement("div");
   const smallVideo = document.createElement("video");
 
   smallVideoWrapper.setAttribute("class", "wrapper");
   smallVideoWrapper.setAttribute("id",name );
+  smallVideoWrapper.setAttribute("data-initials",inits);
 
  // smallVideo.setAttribute("class", "");
+ 
   smallVideo.setAttribute("id",socketId);
   smallVideo.setAttribute("autoplay","true");
+  
+  
 
   
 
@@ -203,8 +214,8 @@ micBtn.addEventListener( "click",
     offer,
     to: socketId
   });
- }
-
+ } 
+ 
  socket.on("call-made", async data => {
   await peerConnection.setRemoteDescription(
     new RTCSessionDescription(data.offer)

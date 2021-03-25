@@ -44,6 +44,8 @@ html, body {
   width:100%;
   height:100%;
   object-fit: cover;
+  left:0;
+  z-index:3;
 }
 
 .big-screen .small-videos .wrapper{
@@ -53,6 +55,23 @@ html, body {
   border-radius: 5px;
   margin: 0 2px; 
 }
+
+[data-initials]:after {
+  position: relative;
+  top:-105%;
+  background: #099bdd;
+  color: white;
+  opacity: 1; 
+  content: attr(data-initials);   
+  display: inline-block; 
+  vertical-align: middle;
+  font-size:3.5em;
+  width: 100%; 
+  height: 100%; 
+  text-align: center; 
+  z-index: -1;
+  }
+
 
 .toolbar{
   position: fixed;
