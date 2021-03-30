@@ -90,12 +90,13 @@ function getMedia(socketId){
       const localVideo = document.querySelector(`#${mySocketId}`);
       console.log(localVideo);
       if (localVideo) { 
-          if ("srcObject" in localVideo) {
-            localVideo.srcObject = stream;
-          } else {
-            // Avoid using this in new browsers, as it is going away.
-            localVideo.src = window.URL.createObjectURL(stream);
-          }
+        localVideo.muted=true;
+        if ("srcObject" in localVideo) {
+          localVideo.srcObject = stream;
+        } else {
+          // Avoid using this in new browsers, as it is going away.
+          localVideo.src = window.URL.createObjectURL(stream);
+        }
       };
       stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
     }
@@ -205,13 +206,12 @@ micBtn.addEventListener( "click",
 
  //RTC functions
 
- async function callUser(socketId) {
+ async function callUsers(socketId) {
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(new RTCSessionDescription(offer));
   
-  socket.emit("call-user", {
-    offer,
-    to: socketId
+  socket.emit("call-users", {
+    offer
   });
  } 
  
