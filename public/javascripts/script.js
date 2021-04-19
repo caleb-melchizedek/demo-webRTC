@@ -19,31 +19,6 @@ var constraints={
 var mySocketId;
 
 function getMedia(socketId){
-
-  //check for mediadevices
-  if (navigator.mediaDevices === undefined) {
-    navigator.mediaDevices = {};
-  }
-  // For browsers with partial implementation mediaDevices. 
-  if (navigator.mediaDevices.getUserMedia === undefined) {
-    navigator.mediaDevices.getUserMedia = function(constraints) {
-
-      // First get legacy getUserMedia, if present
-      var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
-      // Return a rejected promise with an error for browsers that don't implement it
-      if (!getUserMedia) {
-        return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
-      }
-
-      // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
-      return new Promise(function(resolve, reject) {
-        getUserMedia.call(navigator, constraints, resolve, reject);
-      });
-    }
-  }
-
-
   navigator.mediaDevices.getUserMedia(constraints)
   .then(
     stream => {
