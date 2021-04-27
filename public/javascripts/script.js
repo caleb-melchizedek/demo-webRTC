@@ -172,7 +172,7 @@ window.addEventListener('load',()=>{
 
     smallVideoWrapper.appendChild(smallVideo);
     
-    smallVideoWrapper.addEventListener("click", 
+    smallVideoWrapper.addEventListener("load", 
       () => {
         callUsers(socketId);
       }
