@@ -1,3 +1,4 @@
+//require('./mediaDevicesPolyfill')
 
 //const port = normalizePort(process.env.PORT || '3000');
 const socket =io();
@@ -168,13 +169,11 @@ micBtn.addEventListener( "click",
 
   smallVideoWrapper.appendChild(smallVideo);
   
-  smallVideoWrapper.addEventListener("click", () => {
-    // //unselectUsersFromList();
-    // userContainerEl.setAttribute("class", "active-user active-user--selected");
-    // const talkingWithInfo = document.getElementById("talking-with-info");
-    // talkingWithInfo.innerHTML = `Talking with: "Socket: ${socketId}"`;
-    callUser(socketId);
-  }); 
+  smallVideoWrapper.addEventListener("click", 
+    () => {
+      callUsers(socketId);
+    }
+  ); 
   return smallVideoWrapper;
  }
 
