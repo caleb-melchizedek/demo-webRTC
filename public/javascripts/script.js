@@ -1,6 +1,30 @@
-//require('./mediaDevicesPolyfill')
+// require('md-gum-polyfill');
 
 //const port = normalizePort(process.env.PORT || '3000');
+// if (navigator.mediaDevices === undefined) {
+//   navigator.mediaDevices = {};
+// }
+
+
+// if (navigator.mediaDevices.getUserMedia === undefined) {
+//   navigator.mediaDevices.getUserMedia = function(constraints) {
+
+//     // First get ahold of the legacy getUserMedia, if present
+//     var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+//     // Some browsers just don't implement it - return a rejected promise with an error
+//     // to keep a consistent interface
+//     if (!getUserMedia) {
+//       return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+//     }
+
+//     // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
+//     return new Promise(function(resolve, reject) {
+//       getUserMedia.call(navigator, constraints, resolve, reject);
+//     });
+//   }
+// }
+
 window.addEventListener('load',()=>{
 
 
@@ -9,20 +33,25 @@ window.addEventListener('load',()=>{
   const { RTCPeerConnection, RTCSessionDescription } = window;
   const peerConnection= new RTCPeerConnection;
 
-  //capture local media
+  // user identifiers
+  var myName;
+  var mySocketId;
 
+  // default media constraints
   const mediaCheck={
     audio:false,
     video:false
   };
+  //media constraints
   var constraints={
     audio:true,
     video:true
   };
 
-  var mySocketId;
+//capture local media
 
   function getMedia(socketId){
+
     navigator.mediaDevices.getUserMedia(constraints)
     .then(
       stream => {
@@ -58,7 +87,7 @@ window.addEventListener('load',()=>{
             stream.getTracks().forEach(function(track) {
                 if (track.readyState == 'live') {
                     track.stop();
-                    // track.enabled=false;
+                    track.enabled=false;
                 }
                 console.log(track);
             });
@@ -66,7 +95,7 @@ window.addEventListener('load',()=>{
         
     
 
-        const localVideo = document.querySelector(`#${mySocketId}`);
+        const localVideo = document.getElementById(`${myName}`).firstChild;
         console.log(localVideo);
         if (localVideo) { 
           localVideo.muted=true;
@@ -87,21 +116,22 @@ window.addEventListener('load',()=>{
 
   //socket operations
 
-  socket.on("update-user-list", ({ users,myId }) => {
-    mySocketId=myId
+  socket.on("update-user-list", ({ users,clientName }) => {
+    console.log(users);
     updateUserList(users);
+    if (clientName) myName= clientName;
+    console.log(users);
+    mysocketId = users.find(e=>e.name=myName).socketId;
+    console.log("Your socket Id is"+mysocketId+ ": and you are "+ myName);
+    getMedia(mySocketId);
   });
-
-  
 
   socket.on("remove-user", ({ socketId }) => {
     const elToRemove = document.getElementById(socketId);
-    
     if (elToRemove) {
       elToRemove.remove();
     }
   });
-
 
   //functions
 
@@ -111,10 +141,8 @@ window.addEventListener('load',()=>{
     function(){    
       mediaCheck.video= !mediaCheck.video 
       console.log(mediaCheck)
-      //socket.emit("getMedia");
       getMedia(mySocketId);
     }
-
   );
   //toggle audio
   let micBtn=document.getElementById("micBtn");
@@ -122,7 +150,6 @@ window.addEventListener('load',()=>{
     function(){ 
       mediaCheck.audio= !mediaCheck.audio 
       console.log(mediaCheck)
-      //socket.emit("getMedia");
       getMedia(mySocketId);
     }
   );
@@ -134,9 +161,9 @@ window.addEventListener('load',()=>{
 
     while (activeUserContainer.firstChild) {
       activeUserContainer.removeChild(activeUserContainer.firstChild);
-      console.log("vids removed for replacement")
     }
-    users.forEach(user => {
+    console.log("vids removed for replacement");
+    users.forEach(user => { 
       const alreadyExistingUser = document.getElementById(user.name);
       if (!alreadyExistingUser) {
         const userContainerEl = createUserItemContainer(user.socketId, user.name);
@@ -160,8 +187,6 @@ window.addEventListener('load',()=>{
     smallVideoWrapper.setAttribute("class", "wrapper");
     smallVideoWrapper.setAttribute("id",name );
     smallVideoWrapper.setAttribute("data-initials",inits);
-
-  // smallVideo.setAttribute("class", "");
   
     smallVideo.setAttribute("id",socketId);
     smallVideo.setAttribute("autoplay","true");
@@ -172,9 +197,10 @@ window.addEventListener('load',()=>{
 
     smallVideoWrapper.appendChild(smallVideo);
     
-    smallVideoWrapper.addEventListener("load", 
+    smallVideo.addEventListener("click", 
       () => {
-        callUsers(socketId);
+        callUsers();
+        console.log('calling users');
       }
     ); 
     return smallVideoWrapper;
@@ -183,16 +209,18 @@ window.addEventListener('load',()=>{
 
   //RTC functions
 
-  async function callUsers(socketId) {
+  async function callUsers() {
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(new RTCSessionDescription(offer));
-    
+    console.log('callusers fired');
     socket.emit("call-users", {
-      offer
+      offer,
+      caller:myName
     });
   } 
   
   socket.on("call-made", async data => {
+    console.log('call made received')
     await peerConnection.setRemoteDescription(
       new RTCSessionDescription(data.offer)
     );
@@ -201,24 +229,28 @@ window.addEventListener('load',()=>{
     
     socket.emit("make-answer", {
       answer,
-      to: data.socket
+      to: data.socket,
+      caller: data.caller
     });
+    console.log('make answer fired')
   });
 
 
   socket.on("answer-made", async data=>{
+    console.log('call made received')
     await peerConnection.setRemoteDescription(
       new RTCSessionDescription(data.answer)
     );
-  
+    
+    peerConnection.ontrack = function({ streams:[stream] }) {
+      const remoteStream= new MediaStream();
+      remoteStream.addTrack(event.track ,stream);
+      const remoteVideo = document.getElementById(data.caller).firstChild;
+      if (remoteVideo) {
+        remoteVideo.srcObject =remoteStream;
+      }
+    }
   });
 
-  peerConnection.ontrack = function({ streams:[stream] }) {
-    const remoteStream= new MediaStream();
-    remoteStream.addTrack(event.track ,stream);
-    const remoteVideo = document.getElementById("remote-video");
-    if (remoteVideo) {
-      remoteVideo.srcObject =remoteStream;
-    }
-  }; 
+  ; 
 })
